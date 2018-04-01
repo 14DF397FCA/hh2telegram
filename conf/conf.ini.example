@@ -1,0 +1,8 @@
+[main]
+token=place_valid_telegram_token here
+db_name=hh.db
+vacancy_table_name=vacancies
+
+[vacancies]
+json_columns=id,requirement,alternate_url,created_at,published_at,name,responsibility
+table_schema=id BIGINT (32) PRIMARY KEY, requirement TEXT, alternate_url TEXT, created_at DATETIME, published_at DATETIME, name TEXT,responsibility TEXT

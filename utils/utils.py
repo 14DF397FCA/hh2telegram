@@ -134,5 +134,13 @@ def get_vacancy_table_name(config: ConfigParser):
     return __get_param(config=config, section="main", param="vacancy_table_name")
 
 
+def get_base_url(config: ConfigParser):
+    return __get_param(config=config, section="main", param="base_url")
+
+
+def get_vacancy_on_page(config: ConfigParser):
+    return __get_param(config=config, section="main", param="vacancy_on_page")
+
+
 def get_vacancy_table_schema(config: ConfigParser, vacancy_table):
     return __get_param(config=config, section=vacancy_table, param="table_schema")

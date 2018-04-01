@@ -9,9 +9,8 @@ from requests import Response
 from utils.db import convert_vacancies_to_insert_sql, connect_db, create_table_vacancies, save_vacancies_to_db, \
     get_vacancies_from_db
 from utils.utils import get_json_columns_for_table_vacancies, get_db_name, compare_vacancies, prepare_message, \
-    get_vacancy_table_name, get_vacancy_table_schema
+    get_vacancy_table_name, get_vacancy_table_schema, get_base_url, get_vacancy_on_page
 
-BASE_URL = f"https://api.hh.ru/vacancies?clusters=false&specialization=1.420&specialization=1.113&specialization=1.110&specialization=1.270&specialization=1.273&specialization=1.272&area=2"
 SUF_PER_PAGE = "per_page"
 SUF_PAGE = "page"
 
@@ -68,7 +67,7 @@ def __get_vacancy(vacancy: json) -> {}:
         return {}
 
 
-def get_vacancies(on_page=100, url=BASE_URL) -> List[Dict]:
+def get_vacancies(url: str, on_page: int = 100) -> List[Dict]:
     logging.info("Receive vacancies from hh.ru")
     page = 0
     first_page = page_to_json(url=url, page=page, per_page=on_page)
@@ -101,7 +100,9 @@ def get_new_vacancies(conf) -> List[str]:
     vacancy_table_name = get_vacancy_table_name(config=conf)
     vacancy_table_schema = get_vacancy_table_schema(config=conf, vacancy_table=vacancy_table_name)
     columns = get_json_columns_for_table_vacancies(config=conf)
-    new_vacancies = get_vacancies()
+    vacancy_on_page = get_vacancy_on_page(config=conf)
+    url = get_base_url(config=conf)
+    new_vacancies = get_vacancies(url=url, on_page=vacancy_on_page)
     conn = connect_db(db_name=get_db_name(config=conf))
     create_table_vacancies(conn=conn, table_name=vacancy_table_name, table_schema=vacancy_table_schema)
     old_ids = get_vacancies_from_db(connection=conn, table_name=vacancy_table_name)

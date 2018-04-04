@@ -142,5 +142,9 @@ def get_vacancy_on_page(config: ConfigParser):
     return __get_param(config=config, section="main", param="vacancy_on_page")
 
 
+def get_delay_between_messages(config: ConfigParser):
+    return __get_param(config=config, section="main", param="delay_between_messages")
+
+
 def get_vacancy_table_schema(config: ConfigParser, vacancy_table):
     return __get_param(config=config, section=vacancy_table, param="table_schema")

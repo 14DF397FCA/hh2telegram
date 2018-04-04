@@ -43,7 +43,7 @@ def __page_to_json(resp: Response) -> json:
 
 
 def page_to_json(url: str, page: int, per_page: int) -> json:
-    return __page_to_json(resp=__get_raw_page(url=url, page=page, per_page=per_page))
+    return __page_to_json(resp=__get_raw_page(url=url, page=int(page), per_page=int(per_page)))
 
 
 def __get_data_for_vacancy(data, key):

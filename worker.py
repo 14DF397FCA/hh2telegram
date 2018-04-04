@@ -2,12 +2,13 @@ import logging
 
 from telegram.ext import Updater, CommandHandler
 
-from utils.utils import get_telegram_token, JOB_NAME
+from utils.utils import get_telegram_token, JOB_NAME, get_delay_between_messages
 from utils.startup import startup
 from utils.vacancies import get_new_vacancies
 
 TOKEN = None
 CONFIG = None
+DELAY_BETWEEN_MESSAGES = None
 
 
 # Define a few command handlers. These usually take the two arguments bot and
@@ -106,5 +107,6 @@ def main():
 if __name__ == '__main__':
     CONFIG = startup()
     TOKEN = get_telegram_token(config=CONFIG)
+    DELAY_BETWEEN_MESSAGES = get_delay_between_messages(config=CONFIG)
 
     main()

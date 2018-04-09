@@ -1,3 +1,4 @@
+import json
 import os
 import logging
 import configparser
@@ -6,6 +7,8 @@ from configparser import ConfigParser
 
 import argparse
 from typing import Dict, List
+
+import requests
 
 JOB_NAME = "hh_checker_task"
 
@@ -89,12 +92,34 @@ def extract_id_from_new_vacancies(vacancies: List[Dict]) -> Set:
     return ids
 
 
+def __get_data_for_vacancy(data, key):
+    if key in data:
+        return data[key]
+    else:
+        return ''
+
+
+def get_vacancy(vacancy: json) -> {}:
+    try:
+        return {"id": vacancy["id"],
+                "requirement": __get_data_for_vacancy(__get_data_for_vacancy(vacancy, "snippet"), "requirement"),
+                "alternate_url": __get_data_for_vacancy(vacancy, "alternate_url"),
+                "created_at": __get_data_for_vacancy(vacancy, "created_at"),
+                "published_at": __get_data_for_vacancy(vacancy, "published_at"),
+                "name": __get_data_for_vacancy(vacancy, "name"),
+                "responsibility": __get_data_for_vacancy(__get_data_for_vacancy(vacancy, "snippet"), "responsibility")}
+    except:
+        logging.error("Can't parse input json, %s", vacancy)
+        return {}
+
+
 def compare_vacancies(new_vacancies: List[Dict], old_vacancies: Set) -> List[Dict]:
     logging.info("Compare new and exists vacancies")
-    if len(new_vacancies) == 0:
+    if new_vacancies and len(new_vacancies) == 0:
         logging.error("Empty list of new vacancies")
         return []
-    if len(old_vacancies) == 0:
+    if old_vacancies and len(old_vacancies) == 0:
+        logging.error("Empty list of old vacancies")
         return new_vacancies
     else:
         vacancies = []
@@ -118,6 +143,25 @@ def prepare_message(vacancies: List[Dict]) -> List[str]:
     return r
 
 
+def exec_http_request(url: str):
+    try:
+        r = requests.get(url=url)
+        r.raise_for_status()
+        return r
+    except requests.exceptions.HTTPError as errh:
+        logging.error("HTTP error (%s) - %s", url, errh)
+        return None
+    except requests.exceptions.ConnectionError as errc:
+        logging.error("Error connection (%s) - %s", url, errc)
+        return None
+    except requests.exceptions.Timeout as errt:
+        logging.error("Timeout (%s) - %s", url, errt)
+        return None
+    except requests.exceptions.RequestException as err:
+        logging.error("Request exception (%s) - %s", url, err)
+        return None
+
+
 def get_telegram_token(config: ConfigParser):
     return __get_param(config=config, section="main", param="token")
 
@@ -139,11 +183,19 @@ def get_base_url(config: ConfigParser):
 
 
 def get_vacancy_on_page(config: ConfigParser):
-    return __get_param(config=config, section="main", param="vacancy_on_page")
+    return int(__get_param(config=config, section="main", param="vacancy_on_page"))
 
 
 def get_delay_between_messages(config: ConfigParser):
-    return __get_param(config=config, section="main", param="delay_between_messages")
+    return int(__get_param(config=config, section="main", param="delay_between_messages"))
+
+
+def get_http_delay(config: ConfigParser):
+    return int(__get_param(config=config, section="main", param="http_delay"))
+
+
+def get_http_attempt(config: ConfigParser):
+    return int(__get_param(config=config, section="main", param="http_attempt"))
 
 
 def get_vacancy_table_schema(config: ConfigParser, vacancy_table):

@@ -4,6 +4,9 @@ db_name=hh.db
 vacancy_table_name=vacancies
 base_url=https://api.hh.ru/vacancies?clusters=false&specialization=1.420&specialization=1.113&specialization=1.110&specialization=1.270&specialization=1.273&specialization=1.272&area=2
 vacancy_on_page=100
+delay_between_messages=1
+http_delay=1
+http_attempt=5
 
 [vacancies]
 json_columns=id,requirement,alternate_url,created_at,published_at,name,responsibility

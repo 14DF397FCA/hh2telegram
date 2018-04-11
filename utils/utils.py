@@ -2,11 +2,10 @@ import json
 import os
 import logging
 import configparser
-from collections import Set
 from configparser import ConfigParser
 
 import argparse
-from typing import Dict, List
+from typing import Dict, List, Set
 
 import requests
 
@@ -85,7 +84,7 @@ def extract_id_from_new_vacancies(vacancies: List[Dict]) -> Set:
     logging.info("Extracting vacancy id from list of new vacancies")
     if len(vacancies) == 0:
         logging.debug("Empty list of vacancies")
-        return {}
+        return Set()
     ids = set()
     for r_id, vac in enumerate(vacancies):
         ids.add(int(vac["id"]))
